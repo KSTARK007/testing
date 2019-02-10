@@ -26,6 +26,10 @@ $(document).ready(function() {
                 $('#successAlert').text("Registration Successful").show();
                 $('#errorAlert').hide();
             }
+            if(data.code == 600) {
+                $('#errorAlert').text("sha1 encode error").show();
+                $('#errorAlert').hide();
+            }
 
         });
 
