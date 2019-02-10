@@ -1,16 +1,18 @@
 from flask import Flask, render_template, request, jsonify
+import hashlib
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
-	return render_template('form.html')
+	return render_template('form.html',name = "kiran")
 
 @app.route('/api/v1/users', methods=['POST'])
 def process():
 	userid = 0
-	name = request.form['name']
-	password = request.form['password']
+	j = request.get_json()
+	name = j['name']
+	password = j['password']
 	
 	fo = open("users.txt","r")
 	k = fo.readline()
@@ -36,4 +38,4 @@ def process():
 	return jsonify({'code' : 400})
 
 if __name__ == '__main__':
-	app.run(debug=True)
+	app.run(host='0.0.0.0',port=80,debug=True)
