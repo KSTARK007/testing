@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from pymongo import *
 from random import randint
-@app.route('/api/v1/users', methods=['POST'])
 
 client = MongoClient(port=27017)
 db=client.cc_assignment

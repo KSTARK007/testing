@@ -5,14 +5,13 @@ $(document).ready(function() {
         $.ajax({
             data : JSON.stringify({
                 name : $('#nameInput').val(),
-                password : $('#passwordInput').val()
+                password : sha1($('#passwordInput').val())
             }),
             dataType : "json",
             contentType: 'application/json',
             type : 'POST',
-            url : '/api/v1/users'
-        })
-        .done(function(data) {
+            url : '/api/v1/users',
+            success : function(data){
 
             if (data.code == 400) {
                 $('#errorAlert').text("UserName or Password missing").show();
@@ -28,13 +27,12 @@ $(document).ready(function() {
             }
             if(data.code == 600) {
                 $('#errorAlert').text("sha1 encode error").show();
-                $('#errorAlert').hide();
+                $('#successAlert').hide();
             }
 
-        });
 
+    }});
         event.preventDefault();
 
-    });
-
+});
 });

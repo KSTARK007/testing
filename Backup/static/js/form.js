@@ -10,9 +10,8 @@ $(document).ready(function() {
             dataType : "json",
             contentType: 'application/json',
             type : 'POST',
-            url : '/api/v1/users'
-        })
-        .done(function(data) {
+            url : '/api/v1/users',
+            success : function(data){
 
             if (data.code == 400) {
                 $('#errorAlert').text("UserName or Password missing").show();
@@ -26,11 +25,14 @@ $(document).ready(function() {
                 $('#successAlert').text("Registration Successful").show();
                 $('#errorAlert').hide();
             }
+            if(data.code == 600) {
+                $('#errorAlert').text("sha1 encode error").show();
+                $('#successAlert').hide();
+            }
 
-        });
 
+    }});
         event.preventDefault();
 
-    });
-
+});
 });
