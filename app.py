@@ -4,8 +4,10 @@ from pymongo import *
 import string 
 import datetime
 import re
+from flask_cors import *
 
 app = Flask(__name__)
+cors = CORS(app)
 
 
 @app.errorhandler(404)
@@ -14,6 +16,7 @@ def page_not_found(e):
     return "bla",404
 
 @app.route('/')
+@cross_origin()
 def index():
 	return render_template('form.html')
 
@@ -91,8 +94,8 @@ def catdelete(categories):
 #api 6 and 8
 @app.route('/api/v1/categories/<categoryName>/acts', methods=['GET'])
 def catactsizeprint(categoryName):
-	start = int(request.args.get("start"))
-	end = int(request.args.get("end"))
+	start = request.args.get("start")
+	end = request.args.get("end")
 	if(start is None and end is None):
 		if(not cat.count_documents({"catName":categoryName})>0):
 			return jsonify({"code": 400})
@@ -111,6 +114,8 @@ def catactsizeprint(categoryName):
 	if(start is None or end is None):
 		return jsonify({"code":1400})
 	else :
+		start = int(start)
+		end = int(end)
 		if(start > end or (start<0 or end <0)):
 			return jsonify({"code":1600})
 		else :
@@ -118,13 +123,13 @@ def catactsizeprint(categoryName):
 			k = 1
 			ll = list()
 			val = act.count_documents({"catName":categoryName})
-			if(val < diff):
+			if(val < diff or diff >100):
 				return jsonify({"code" : 1400})
 			if(val == 0):
 				return jsonify({'code':1404})
-			v = act.find({"catName" : categoryName},{"_id":0})
+			v = act.find({"catName" : categoryName},{"_id":0}).sort([("actId",-1)])
 			for x in v:
-				if(k >= start and k<= end):
+				if(k <= diff):
 					ll.append(x)
 				k = k + 1
 			return jsonify(ll)		

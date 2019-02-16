@@ -27,7 +27,6 @@ function getBase64(file) {
 
 $(document).ready(function() {
     $.get('/actId',function(data){
-            console.log(data);
             $("#actId").val(parseInt(data)+1);
     });
     $("#inp").change(function(e){
@@ -35,13 +34,14 @@ $(document).ready(function() {
     });
     
     $("#upload").click(function(e){
-        if ($("#b64").html() =="" or $('#username').val()=="" or $('#caption').val() == "") {
-
+        if ($("#b64").html() =="" || $('#username').val()=="" || $('#caption').val() == "") {
+            $('#errorAlert').text("empty fields").show();
+            $('#successAlert').hide();   
         }
         else{
             $.ajax({
                 data : JSON.stringify({
-                    actId : $('#actId').val(),
+                    actId : parseInt($('#actId').val()),
                     username : $('#username').val(),
                     timestamp : dateCal(),
                     caption : $('#caption').val(),
