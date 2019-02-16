@@ -1,14 +1,21 @@
 function dateCal(){
-var dt = new Date();
-m =dt.getMonth() 
-if(m<10){m = "0"+String(parseInt(m)+1)}
-else{m = String(parseInt(m)+1)}
-
-d = parseInt(dt.getDate())
-if(d<10){d = "0"+String(parseInt(d))}
-else{d = String(parseInt(d))}
-var time = d + "-" + m + "-" + dt.getFullYear() + ":" + dt.getSeconds() + "-" + dt.getMinutes() + "-" + dt.getHours();
-return time;
+    var dt = new Date();
+    m =dt.getMonth() 
+    if(m<10){
+        m = "0"+String(parseInt(m)+1)
+    }
+    else{
+        m = String(parseInt(m)+1)
+    }
+    d = parseInt(dt.getDate())
+    if(d<10){
+        d = "0"+String(parseInt(d))
+    }
+    else{
+        d = String(parseInt(d))
+    }
+    var time = d + "-" + m + "-" + dt.getFullYear() + ":" + dt.getSeconds() + "-" + dt.getMinutes() + "-" + dt.getHours();
+    return time;
 }
 
 function getBase64(file) {
@@ -88,6 +95,7 @@ $(document).ready(function() {
                     $('#inp').hide();
                     $('#img').hide();
                     $('#upload').hide();
+                    $('#b64').hide();
                 }
             }});
         }

@@ -215,6 +215,16 @@ def actUpload():
 def actid():
 	f = client.cc_assignment.orgid_counter.find_one({"_id":"actId"})
 	return jsonify(f['seq'])
+#down vote
+@app.route('/api/v1/acts/downvote', methods=['POST'])
+def downvote():
+	j = request.get_json()
+	if(not act.count_documents({"actId":j['actId']})>0):
+		return jsonify({"code": 400})
+	else:
+		act.update_one( { 'actId': j['actId'] },{ '$inc': {'upvote': -1}})
+		return jsonify({"code": 200})
+
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0',port=80)
