@@ -24,6 +24,9 @@ def index():
 def upload():
 	return render_template('upload.html')
 
+@app.route('/cat')
+def cat():
+	return render_template('cat.html')
 
 client = MongoClient(port=27017)
 db=client.cc_assignment.users
@@ -132,7 +135,7 @@ def catactsizeprint(categoryName):
 				if(k <= diff):
 					ll.append(x)
 				k = k + 1
-			return jsonify(ll)		
+			return jsonify(ll),200		
 
 #api 7
 @app.route('/api/v1/categories/<categories>/acts/size', methods=['GET'])
