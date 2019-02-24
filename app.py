@@ -12,8 +12,7 @@ cors = CORS(app)
 
 @app.errorhandler(404)
 def page_not_found(e):
-    # note that we set the 404 status explicitly
-    return "bla",404
+    return "error",404
 
 @app.route('/')
 @cross_origin()
@@ -46,7 +45,7 @@ def process():
 	if( len(password) != 40 or not all(c in string.hexdigits for c in password) ):
 		return jsonify({'code' : 600})
 
-	if name and password:
+	if name and password and password != "da39a3ee5e6b4b0d3255bfef95601890afd80709":
 		if(db.count_documents({"name":name})>0):
 			return jsonify({'code' : 405})
 
@@ -61,8 +60,7 @@ def userdelete(username):
 		db.delete_one({"name":username})
 		return jsonify({'code':200})
 	else:
-		abort(404)
-		return jsonify({'code':404})
+		return jsonify({'code':404}),400
 
 #api 3
 @app.route('/api/v1/categories', methods=['GET'])
@@ -218,6 +216,7 @@ def actUpload():
 def actid():
 	f = client.cc_assignment.orgid_counter.find_one({"_id":"actId"})
 	return jsonify(f['seq'])
+
 #down vote
 @app.route('/api/v1/acts/downvote', methods=['POST'])
 def downvote():
@@ -228,6 +227,24 @@ def downvote():
 		act.update_one( { 'actId': j['actId'] },{ '$inc': {'upvote': -1}})
 		return jsonify({"code": 200})
 
+#login
+@app.route('/api/v1/users/login', methods=['POST'])
+def processes():
+	j = request.get_json()
+	name = j['name']
+	password = j['password']
+	if( len(password) != 40 or not all(c in string.hexdigits for c in password) ):
+		return jsonify({'code' : 600 ,"text" :"Sha1 error"})
+
+	if name and password and password != "da39a3ee5e6b4b0d3255bfef95601890afd80709":
+		if(db.count_documents({"name":name})<0):
+			return jsonify({'code' : 405 ,"text" :"login fail"}),400
+
+		v = db.find_one({'name': name},{"_id":0})
+		return jsonify({'code' : 201,"text" :"Successfull login","userId":v["userId"]})
+	return jsonify({'code' : 400,"text" :"data missing"}),400
+
+
 
 if __name__ == '__main__':
-	app.run(host='0.0.0.0',port=80)
+	app.run(host='0.0.0.0',port=80,debug = True)

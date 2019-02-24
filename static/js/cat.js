@@ -13,6 +13,11 @@ function getBase64(file) {
   });
 }
 
+
+function makeEntry(data){
+    
+}
+
 function putBase64(value) {
     document.getElementById("img").src = value;
 }
@@ -40,7 +45,7 @@ $(document).ready(function() {
             dataType : "json",
             contentType: 'application/json',
             type : 'GET',
-            url : '/api/v1/categories/'+ $("#cat").find(":selected").text() +'/acts',
+            url : 'http://3.94.45.77/api/v1/categories/'+ $("#cat").find(":selected").text() +'/acts',
             success : function(data){
 
             if (data.code == 405) {
