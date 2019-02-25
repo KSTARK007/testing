@@ -212,7 +212,7 @@ def actUpload():
 
 # helper api's
 # get act id
-@app.route('/actId')
+@app.route('/api/get/actId')
 def actid():
 	f = client.cc_assignment.orgid_counter.find_one({"_id":"actId"})
 	return jsonify(f['seq'])
@@ -237,8 +237,8 @@ def processes():
 		return jsonify({'code' : 600 ,"text" :"Sha1 error"})
 
 	if name and password and password != "da39a3ee5e6b4b0d3255bfef95601890afd80709":
-		if(db.count_documents({"name":name})<0):
-			return jsonify({'code' : 405 ,"text" :"login fail"}),400
+		if(db.count_documents({"name":name})<=0):
+			return jsonify({'code' : 405 ,"text" :"login fail"})
 
 		v = db.find_one({'name': name},{"_id":0})
 		return jsonify({'code' : 201,"text" :"Successfull login","userId":v["userId"]})
