@@ -1,7 +1,7 @@
 from flask import *
 import hashlib
 from pymongo import *
-import string 
+import string
 import datetime
 import re
 from flask_cors import *
@@ -60,7 +60,7 @@ def userdelete(username):
 		db.delete_one({"name":username})
 		return jsonify({'code':200})
 	else:
-		return jsonify({'code':404}),400
+		return jsonify({'code':404})
 
 #api 3
 @app.route('/api/v1/categories', methods=['GET'])
@@ -125,7 +125,7 @@ def catactsizeprint(categoryName):
 			ll = list()
 			val = act.count_documents({"catName":categoryName})
 			if(val < diff or diff >100):
-				return jsonify({"code" : 1400})
+				return jsonify({"code" : 1400,"text":"more than 100 values "}),400
 			if(val == 0):
 				return jsonify({'code':1404})
 			v = act.find({"catName" : categoryName},{"_id":0}).sort([("actId",-1)])
@@ -133,7 +133,7 @@ def catactsizeprint(categoryName):
 				if(k <= diff):
 					ll.append(x)
 				k = k + 1
-			return jsonify(ll),200		
+			return jsonify(ll),200
 
 #api 7
 @app.route('/api/v1/categories/<categories>/acts/size', methods=['GET'])
@@ -159,7 +159,7 @@ def upvote():
 @app.route('/api/v1/acts/<actId>', methods=['DELETE'])
 def actDelete(actId):
 	if(not act.count_documents({"actId":int(actId)})>0):
-		return jsonify({"code": 400})
+		return jsonify({"code": 400}),400
 	else:
 		j = act.find({"actId":int(actId)},{"_id":0})
 		for i in j:
@@ -168,7 +168,7 @@ def actDelete(actId):
 		cat.update_one({ 'catName':l },{ '$inc': {'size': -1}})
 		act.delete_one({"actId":int(actId)})
 		return jsonify({'code':200})
-		
+
 
 def validateDateTime(date_text):
     try:
@@ -195,7 +195,7 @@ def actUpload():
 	#to validate user exists
 	if(not db.count_documents({"name":j['username']})>0):
 		return jsonify({"code":407})
-	#to validate Base64 code 
+	#to validate Base64 code
 	if(not validateBase64(j['img'])):
 		return jsonify({"code":408})
 	#to validate upvote
@@ -244,6 +244,14 @@ def processes():
 		return jsonify({'code' : 201,"text" :"Successfull login","userId":v["userId"]})
 	return jsonify({'code' : 400,"text" :"data missing"}),400
 
+#get list of users
+@app.route('/api/v1/userlist', methods=['GET'])
+def listuser():
+	j = db.find()
+	d = dict()
+	for x in j:
+		d[x['name']]=x['userId']
+	return jsonify(d)
 
 
 if __name__ == '__main__':
