@@ -50,7 +50,7 @@ def process():
 			print("username already exist")
 			return jsonify({'code' : 405,"text":"username already exist"}),400
 		result=db.insert_one({'userId': getNextSequence(client.cc_assignment.orgid_counter,"userId"), 'name': name, 'password' : password })
-		return jsonify({'code' : 201}),200
+		return jsonify({'code' : 201}),201
 	print("empty fields")
 	return jsonify({'code' : 400,"text":"empty fields"}),400
 
@@ -85,7 +85,7 @@ def categorieList():
 		print("categoryName already exist")
 		return jsonify({'code':404}),400
 	result=cat.insert_one({'catId': getNextSequence(client.cc_assignment.orgid_counter,"catId"), 'catName':j , 'size' : 0 })
-	return jsonify({'code':200}),200
+	return jsonify({'code':200}),201
 
 #api 5
 @app.route('/api/v1/categories/<categories>', methods=['DELETE'])
@@ -112,7 +112,7 @@ def catactsizeprint(categoryName):
 			l = list()
 			if(act.count_documents({"catName":categoryName}) == 0):
 				print("empty category")
-				return jsonify({'code':404}),200
+				return jsonify({'code':404}),204
 			v = act.find({"catName" : categoryName},{"_id":0,"catName":0})
 			for x in v:
 				l.append(x)
@@ -141,7 +141,7 @@ def catactsizeprint(categoryName):
 				print("more values than given or more than 100 values")
 				return jsonify({"code" : 1400,"text":"more than 100 values "}),413
 			if(val == 0):
-				return jsonify({'code':1404}),400
+				return jsonify({'code':1404}),204
 			v = act.find({"catName" : categoryName},{"_id":0}).sort([("timestamp",-1)])
 			for x in v:
 				if(k <= diff):
@@ -157,7 +157,10 @@ def catactsize(categories):
 	else:
 		j = cat.find({"catName" : categories})
 		for x in j:
-			return jsonify(x['size'])
+			l = x['size']
+		if (l == 0 ):
+			return jsonify({"code":411}),204
+		return jsonify(x['size'])
 
 #api 9
 @app.route('/api/v1/acts/upvote', methods=['POST'])
@@ -226,7 +229,7 @@ def actUpload():
 	result=act.insert_one({'actId':j['actId'] , 'username': j['username'], 'timestamp' : j['timestamp'], 'caption':j['caption'], 'catName':j['categoryName'], 'imgB64':j['imgB64'], 'upvote':0 })
 	cat.update_one({ 'catName':j['categoryName'] },{ '$inc': {'size': 1}})
 	client.cc_assignment.orgid_counter.update_one( {'_id':"actId"},{'$inc': {'seq': 1}})
-	return jsonify({'code':200})
+	return jsonify({'code':200}),201
 
 # helper api's
 # get act id
@@ -259,7 +262,7 @@ def processes():
 			return jsonify({'code' : 405 ,"text" :"login fail"}),400
 
 		v = db.find_one({'name': name},{"_id":0})
-		return jsonify({'code' : 201,"text" :"Successfull login","userId":v["userId"]})
+		return jsonify({'code' : 201,"text" :"Successfull login","userId":v["userId"]}),201
 	return jsonify({'code' : 400,"text" :"data missing"}),400
 
 #get list of users
