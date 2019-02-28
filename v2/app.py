@@ -119,7 +119,7 @@ def catactsizeprint(categoryName):
 			return jsonify(l),200
 		else:
 			print("more than 100 asked api6")
-			return jsonify({"code":413}),400
+			return jsonify({"code":413}),413
 	if(start is None or end is None):
 		print("start or end missing")
 		return jsonify({"code":1400}),400
@@ -134,9 +134,12 @@ def catactsizeprint(categoryName):
 			k = 1
 			ll = list()
 			val = act.count_documents({"catName":categoryName})
-			if(val < diff or diff >100):
+			if(val < diff):
+				print("start and end values and not correct")
+				return jsonify({"code":1500}),400
+			if(diff >100):
 				print("more values than given or more than 100 values")
-				return jsonify({"code" : 1400,"text":"more than 100 values "}),400
+				return jsonify({"code" : 1400,"text":"more than 100 values "}),413
 			if(val == 0):
 				return jsonify({'code':1404}),400
 			v = act.find({"catName" : categoryName},{"_id":0}).sort([("timestamp",-1)])
@@ -159,11 +162,15 @@ def catactsize(categories):
 #api 9
 @app.route('/api/v1/acts/upvote', methods=['POST'])
 def upvote():
-	j = request.get_json()
-	if(not act.count_documents({"actId":j['actId']})>0):
+	if(request.get_data().decode('utf-8') == "[]"):
+		return jsonify({"code": 410}),400		 
+	j = re.search("[0-9]+",(request.get_data().decode('utf-8')))
+	j = j.group(0)
+	print(j)
+	if(not act.count_documents({"actId":int(j)})>0):
 		return jsonify({"code": 400}),400
 	else:
-		act.update_one( { 'actId': j['actId'] },{ '$inc': {'upvote': 1}})
+		act.update_one( { 'actId': int(j)},{ '$inc': {'upvote': 1}})
 		return jsonify({"code": 200})
 
 #api 10
